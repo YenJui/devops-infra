@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  runner:
+    build:
+      context: ../runners/base
+      dockerfile: Dockerfile
+    image: devops-infra-runner:latest
+    container_name: github-runner
+    restart: always
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - REPO_URL=${REPO_URL}
+      - RUNNER_LABELS=${RUNNER_LABELS:-self-hosted,coolify}
+      - DAGGER_VERSION=${DAGGER_VERSION:-0.12.0}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dagger-cache:/home/runner/.cache/dagger
+    # Ensure the runner can access the host docker socket
+    # Note: On some systems, you might need to specify the group id of docker
+    # group_add:
+    #   - "999" 
+
+volumes:
+  dagger-cache:
+    driver: local
