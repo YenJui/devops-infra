@@ -12,6 +12,9 @@ if [ -z "$GITHUB_TOKEN" ]; then
   exit 1
 fi
 
+# Automatically strip .git suffix from REPO_URL if present
+REPO_URL=${REPO_URL%.git}
+
 # Set default Dagger version if not provided
 DAGGER_VERSION=${DAGGER_VERSION:-"latest"}
 RUNNER_LABELS=${RUNNER_LABELS:-"self-hosted"}
