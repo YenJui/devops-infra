@@ -30,17 +30,13 @@ The following environment variables are required for the runner:
 
 ## Deployment & Image Building
 
-### 1. Automatic Build (GitHub Actions)
-I've added a GitHub Action workflow in `.github/workflows/docker-build.yml`. 
-- **Push to `main`**: Automatically builds the `latest` image.
-- **Manual Trigger**: Go to the "Actions" tab, select "Build and Push Runner Image", and you can input a specific `dagger_version` (e.g., `0.20.3`) to build.
-
-### 2. Coolify Deployment (Internal Build)
-If you deploy via Coolify using the `docker-compose.yaml`, Coolify will build the image during deployment.
-- Set the `DAGGER_VERSION` environment variable in Coolify to `0.20.3`.
+### 1. Coolify Deployment (Internal Build)
+This project is designed to be built directly by Coolify.
+- Coolify will pull this repository and use the `Dockerfile` to build the runner image locally.
+- Set the `DAGGER_VERSION` environment variable in Coolify (e.g., `0.20.3`).
 - Coolify will pass this to the Docker build process as a `build_arg`.
 
-### 3. Manual Local Build
+### 2. Manual Local Build (Optional)
 ```bash
 docker build -t devops-runner:v0.20.3 \
   --build-arg DAGGER_VERSION=0.20.3 \
@@ -49,10 +45,13 @@ docker build -t devops-runner:v0.20.3 \
 
 ## Deployment on Coolify
 
-1. Create a new "Docker Compose" project in Coolify.
+1. Create a new **Docker Compose** project in Coolify.
 2. Use the content from `coolify/docker-compose.yaml`.
-3. Set the environment variables (`GITHUB_TOKEN`, `REPO_URL`, `DAGGER_VERSION=0.20.3`) in the Coolify dashboard.
-4. Deploy.
+3. Set the following Environment Variables in Coolify:
+   - `GITHUB_TOKEN`: Your GitHub PAT.
+   - `REPO_URL`: Your repository URL.
+   - `DAGGER_VERSION`: The desired Dagger version (e.g., `0.20.3`).
+4. Click **Deploy**.
 
 ## CI Usage
 
