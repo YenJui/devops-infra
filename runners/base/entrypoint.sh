@@ -15,6 +15,12 @@ fi
 # Automatically strip .git suffix and trailing slashes
 REPO_URL=$(echo "${REPO_URL}" | sed 's/\.git$//' | sed 's/\/$//')
 
+# Fix Docker socket permissions if it exists
+if [ -S /var/run/docker.sock ]; then
+  echo "Fixing Docker socket permissions..."
+  sudo chmod 666 /var/run/docker.sock
+fi
+
 # Extract Owner and Repo from URL (e.g., https://github.com/owner/repo)
 OWNER_REPO=$(echo "${REPO_URL}" | sed 's/.*github.com\///')
 
