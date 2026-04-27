@@ -5,6 +5,8 @@ services:
     build:
       context: ../runners/base
       dockerfile: Dockerfile
+      args:
+        DAGGER_VERSION: ${DAGGER_VERSION:-0.20.3}
     image: devops-infra-runner:latest
     container_name: github-runner
     restart: always
