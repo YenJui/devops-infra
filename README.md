@@ -4,8 +4,8 @@ This repository contains the infrastructure configuration for GitHub Self-hosted
 
 ## Project Structure
 
+- `docker-compose.yaml`: The main configuration for deploying via Coolify.
 - `runners/base/`: Contains the Dockerfile and entrypoint script for the custom runner image.
-- `coolify/`: Contains the `docker-compose.yaml` for deploying via Coolify.
 - `examples/`: Contains an example GitHub Action workflow that utilizes the custom runner.
 
 ## Key Features
@@ -46,7 +46,7 @@ docker build -t devops-runner:v0.20.3 \
 ## Deployment on Coolify
 
 1. Create a new **Docker Compose** project in Coolify.
-2. Use the content from `coolify/docker-compose.yaml`.
+2. Use the content from `docker-compose.yaml`.
 3. Set the following Environment Variables in Coolify:
    - `GITHUB_TOKEN`: Your GitHub PAT.
    - `REPO_URL`: Your repository URL.

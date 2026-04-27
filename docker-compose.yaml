@@ -3,7 +3,7 @@ version: '3.8'
 services:
   runner:
     build:
-      context: ../runners/base
+      context: ./runners/base
       dockerfile: Dockerfile
       args:
         DAGGER_VERSION: ${DAGGER_VERSION:-0.20.3}
