@@ -41,9 +41,10 @@ fi
 # Set default Dagger version if not provided
 DAGGER_VERSION=${DAGGER_VERSION:-"latest"}
 RUNNER_LABELS=${RUNNER_LABELS:-"self-hosted"}
+RUNNER_NAME=${RUNNER_NAME:-$(hostname)}
 FULL_LABELS="${RUNNER_LABELS},dagger:${DAGGER_VERSION}"
 
-echo "Configuring runner for ${REPO_URL} with labels: ${FULL_LABELS}"
+echo "Configuring runner ${RUNNER_NAME} for ${REPO_URL} with labels: ${FULL_LABELS}"
 
 # Navigate to runner directory
 cd /home/runner
@@ -51,19 +52,26 @@ cd /home/runner
 # 2. Register the runner using the retrieved Registration Token
 ./config.sh --url "${REPO_URL}" \
             --token "${REG_TOKEN}" \
+            --name "${RUNNER_NAME}" \
             --labels "${FULL_LABELS}" \
             --unattended \
             --replace
 
-# Define cleanup function (needs a fresh token for removal, but let's keep it simple)
+# Define cleanup function
 cleanup() {
-    echo "Removing runner..."
+    set +e
+    echo "Removing runner ${RUNNER_NAME}..."
     # Get a fresh removal token
     REMOVE_TOKEN=$(curl -s -X POST \
       -H "Authorization: token ${GITHUB_TOKEN}" \
       -H "Accept: application/vnd.github.v3+json" \
       "https://api.github.com/repos/${OWNER_REPO}/actions/runners/remove-token" | jq -r '.token')
-    ./config.sh remove --token "${REMOVE_TOKEN}"
+    
+    if [ "$REMOVE_TOKEN" != "null" ] && [ -n "$REMOVE_TOKEN" ]; then
+        ./config.sh remove --token "${REMOVE_TOKEN}"
+    else
+        echo "Failed to get removal token, cannot remove runner from GitHub."
+    fi
 }
 
 # Trap signals for graceful shutdown
@@ -72,4 +80,5 @@ trap 'cleanup; exit 143' TERM
 trap 'cleanup' EXIT
 
 # Start the runner
-./run.sh
+./run.sh &
+wait $!
